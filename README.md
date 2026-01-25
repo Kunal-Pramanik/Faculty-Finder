@@ -1,20 +1,23 @@
 # Faculty Finder – Data Engineering Pipeline
 
 ## Overview
-Faculty Finder is an end-to-end **Data Engineering project** that builds a clean, structured, and API-accessible dataset of university faculty information.  
-The system enables downstream **semantic search and NLP use cases** by exposing cleaned faculty bios and research interests through a FastAPI service.
 
-This project focuses on **data ingestion, transformation, storage, and serving**, following real-world data engineering practices.
+Faculty Finder is an end-to-end **Data Engineering project** that builds a clean, structured, and API-accessible dataset of university faculty information.
+
+The system crawls multiple faculty web pages, normalizes the data, stores it in a relational database, and exposes it through a FastAPI service for downstream analytics and application use.
 
 ---
 
 ## Problem Statement
-Faculty information is often scattered across multiple web pages and stored in unstructured formats.  
+
+Faculty information is typically distributed across multiple web pages and stored in semi-structured HTML formats.
+
 The objective of this project is to:
-- Crawl faculty profile data from a university website
-- Clean and normalize unstructured HTML content
-- Store the processed data in a relational database
-- Serve the data via an API for analytics and semantic search
+
+- Crawl faculty profile data from multiple university faculty web pages
+- Normalize and clean scraped HTML data
+- Store structured faculty information in a relational database
+- Serve the data via a REST API
 
 ---
 
@@ -22,114 +25,133 @@ The objective of this project is to:
 
 ```
 Faculty Web Pages (HTML)
-        
         ↓
 Data Ingestion (Web Scraping)
-        
         ↓
 Data Transformation (Cleaning & Normalization)
-        
         ↓
-PostgreSQL Storage
-        
+SQLite Database (faculty.db)
         ↓
 FastAPI Service
-        
-        ↓
-Downstream NLP / Semantic Search
 ```
-
 
 ---
 
 ## Tech Stack
 
-- **Ingestion:** Python, Requests, BeautifulSoup  
-- **Transformation:** Pandas, Text Cleaning  
-- **Storage:** PostgreSQL  
-- **API / Serving:** FastAPI  
-- **Database Access:** SQLAlchemy  
+- **Ingestion:** Python, Requests, BeautifulSoup
+- **Transformation:** Pandas
+- **Storage:** SQLite
+- **Database Access:** SQLAlchemy
+- **API / Serving:** FastAPI
 - **API Documentation:** Swagger (OpenAPI)
 
 ---
 
 ## Database Design
 
-**Database:** `Faculty_finder`  
-**Schema:** `faculty_list`  
+**Database:** `faculty.db`
+
 **Table:** `faculty`
 
-| Column | Type | Description |
-|------|-----|-------------|
-| faculty_id | TEXT (Primary Key) | Unique faculty identifier |
-| name | TEXT | Faculty name |
-| education | TEXT | Education details |
-| research_interests | TEXT | Research interests |
-| profile_url | TEXT | Faculty profile URL |
-| clean_text | TEXT | Cleaned text for NLP tasks |
+| Column          | Type               | Description                |
+| --------------- | ------------------ | -------------------------- |
+| faculty_id     | TEXT (Primary Key) | Unique faculty identifier  |
+| name            | TEXT               | Faculty name               |
+| profile_url    | TEXT               | Faculty profile URL        |
+| education       | TEXT               | Education details          |
+| email           | TEXT               | Email address              |
+| contact_number | TEXT               | Contact number             |
+| research_area  | TEXT               | Research interests / areas |
 
 ---
 
 ## API Endpoints
 
-The FastAPI service exposes faculty data through RESTful endpoints.  
-All responses are returned in **JSON format** and are documented using Swagger (OpenAPI).
+The FastAPI service exposes faculty data through RESTful endpoints. All responses are returned in **JSON format** and are automatically documented using **Swagger (OpenAPI)**.
 
----
-### Get All Faculty
- 
-Returns the complete list of faculty members with cleaned and structured information.  
-This endpoint serves as the primary hand-off point for downstream analytics and NLP tasks.
+### 1. Get All Faculty
+
+Returns a list of all faculty members available in the database.
+
+**Endpoint**
+```
+GET /faculty
+```
+
+**Description**
+- Fetches all faculty records
+- Results are ordered by `faculty_id`
+- Suitable for analytics, dashboards, and downstream processing
 
 **Sample Response**
 ```json
 [
   {
-    "faculty_id": "F-1",
+    "faculty_id": "F-4821",
     "name": "Abhishek Gupta",
+    "profile_url": "https://www.daiict.ac.in/faculty/...",
     "education": "PhD (Electrical and Computer Engineering)",
-    "research_interests": "Machine Learning, Signal Processing",
-    "profile_url": "https://...",
-    "clean_text": "machine learning signal processing ..."
+    "email": "abhishek@daiict.ac.in",
+    "contact_number": "+91-79-xxxxxxx",
+    "research_area": "Machine Learning, Signal Processing"
   }
 ]
 ```
 
+**HTTP Status Codes**
+- `200 OK` – Successful response
+- `500 Internal Server Error` – Database or server issue
+
 ---
+
 ## How to Run the Project
 
 ### 1. Install Dependencies
-pip install fastapi uvicorn sqlalchemy psycopg2 pandas
 
-### 2. Start PostgreSQL
-Ensure PostgreSQL is running and the database/table are created.
+```bash
+pip install fastapi uvicorn sqlalchemy pandas requests beautifulsoup4
+```
+
+### 2. Create the Database
+
+Run the SQLAlchemy setup script to create `faculty.db` and the `faculty` table.
 
 ### 3. Run the API
+
+```bash
 uvicorn main:app --reload
+```
 
 ### 4. Access the API
-- API Endpoint: http://127.0.0.1:8000/faculty  
-- Swagger UI: http://127.0.0.1:8000/docs  
+
+- API Endpoint: http://127.0.0.1:8000/faculty
+- Swagger UI: http://127.0.0.1:8000/docs
 
 ---
 
 ## Key Data Engineering Concepts Applied
-- Web data ingestion and scraping  
-- Data cleaning and normalization  
-- Relational schema design  
-- Persistent storage using PostgreSQL  
-- API-based data serving with FastAPI  
+
+- Multi-page web scraping
+- Data cleaning and normalization
+- Relational schema design
+- SQLite-based persistent storage
+- API-based data serving with FastAPI
 
 ---
 
 ## Future Enhancements
-- Semantic search using text embeddings  
-- Full-text search in PostgreSQL  
-- Pagination and filtering in APIs  
-- Containerized deployment using Docker  
+
+- Pagination and filtering in APIs
+- Faculty search by research area
+- Migration to PostgreSQL
+- Semantic search using embeddings
+- Containerized deployment using Docker
 
 ---
 
 ## Author
-**Kunal Pramanik , Jinal Sasiya**  
-MSc Data Science 
+
+**Kunal Pramanik, Jinal Sasiya**  
+MSc Data Science
+

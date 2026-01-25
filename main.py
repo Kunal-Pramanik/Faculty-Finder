@@ -3,23 +3,24 @@ from sqlalchemy import create_engine, text
 from pydantic import BaseModel
 from typing import List, Optional
 
-username = "postgres"
-password = "0987"
-host = "localhost"
-port = "5432"
-database = "Faculty_finder"
+# SQLite connection
+DATABASE_URL = "sqlite:///faculty.db"
 
-engine = create_engine(f'postgresql+psycopg2://{username}:{password}@{host}:{port}/{database}')
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False}
+)
 
-app = FastAPI(title="Faculty API")
+app = FastAPI(title="Faculty API (SQLite)")
 
 class FacultyResponse(BaseModel):
     faculty_id: str
     name: str
-    education: Optional[str]
-    research_interests: Optional[str]
     profile_url: Optional[str]
-    clean_text: Optional[str]
+    education: Optional[str]
+    email: Optional[str]
+    contact_number: Optional[str]
+    research_area: Optional[str]
 
 @app.get("/faculty", response_model=List[FacultyResponse])
 def get_faculty():
@@ -29,13 +30,13 @@ def get_faculty():
                 SELECT
                     faculty_id,
                     name,
-                    education,
-                    research_interests,
                     profile_url,
-                    clean_text
-                FROM faculty_list.faculty
+                    education,
+                    email,
+                    contact_number,
+                    research_area
+                FROM faculty
                 ORDER BY faculty_id
             """)
         )
         return result.mappings().all()
-
