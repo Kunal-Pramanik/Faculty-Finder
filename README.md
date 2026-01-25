@@ -152,6 +152,7 @@ uvicorn main:app --reload
 
 ## Author
 
-**Kunal Pramanik, Jinal Sasiya**  
-MSc Data Science
+- **Kunal Pramanik | 202518001**
+- **Jinal Sasiya | 202518062**  
+
 
