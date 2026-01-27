@@ -17,7 +17,7 @@ The objective of this project is to:
 - Crawl faculty profile data from university's multiple faculty web pages
 - Normalize and clean scraped HTML data
 - Store structured faculty information in a relational database
-- Serve the data via a  API
+- Serve the data via a  REST API
 
 ---
 
