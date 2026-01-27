@@ -47,25 +47,54 @@ FastAPI Service
 - **API Documentation:** Swagger (OpenAPI)
 
 ---
+### Dataset Statistics
+
+After data cleaning and consolidation, the final dataset contains structured faculty information with the following statistics:
+
+- **Total number of faculty entries:** 111  
+- **Total number of attributes (columns):** 7  
+
+#### Missing Value Analysis
+
+| Column Name      | Number of NULL Values |
+|------------------|-----------------------|
+| faculty_id       | 0 |
+| name             | 0 |
+| profile_url      | 0 |
+| education        | 2 |
+| email            | 1 |
+| contact_number   | 34 |
+| research_area    | 3 |
+
+The presence of NULL values is expected, as not all faculty profiles publicly provide complete information such as contact numbers or research areas.  
+These missing values were handled gracefully during data ingestion and API serving using optional fields.
+
+---
+
+### Statistical Summary
+
+- The dataset contains **111 unique faculty records**
+- Each faculty member is uniquely identified using `faculty_id`
+- No duplicate entries exist after de-duplication
+- Most missing values occur in the `contact_number` column
+- The dataset is consistent, normalized, and suitable for analytical and API-based use
 
 ## Database Design
 
 - **Database:** `faculty.db`
 
 - **Table:** `faculty`
-- Here we scraped total 111 faculty's details
-- RangeIndex: 111 entries, 0 to 110
--  Data columns (total 6 columns):
    
-| Column          | Type               | Non-Null Count | Description                |
-|-----------------|--------------------|----------------|----------------------------|
-| faculty_id      | TEXT (Primary Key) | 111            | Unique faculty identifier  |
-| name            | TEXT               | 111            | Faculty name               |
-| profile_url     | TEXT               | 111            | Faculty profile URL        |
-| education       | TEXT               | 111            | Education details          |
-| email           | TEXT               | 110            | Email address              |
-| contact_number  | TEXT               | 107            | Contact number             |
-| research_area   | TEXT               | 108            | Research interests / areas |
+| Column          | Type               | Description                |
+|-----------------|--------------------|----------------------------|
+| faculty_id      | TEXT (Primary Key) | Unique faculty identifier  |
+| name            | TEXT               | Faculty name               |
+| profile_url     | TEXT               | Faculty profile URL        |
+| education       | TEXT               | Education details          |
+| email           | TEXT               | Email address              |
+| contact_number  | TEXT               | Contact number             |
+| research_area   | TEXT               | Research interests / areas |
+
 ---
 
 ## API Endpoints
