@@ -146,7 +146,8 @@ pip install fastapi uvicorn sqlalchemy pandas requests beautifulsoup4
 
 ### 2. Create the Database
 
-Run the SQLAlchemy setup script to create `faculty.db` and the `faculty` table.
+- Install the SQLite Browser standard version in the system first .
+- Run the SQLAlchemy setup script to create `faculty.db` and the `faculty` table.
 
 ### 3. Run the API
 
