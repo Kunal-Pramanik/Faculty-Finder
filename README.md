@@ -1,23 +1,24 @@
-# Faculty Finder – Data Engineering Pipeline
+# Faculty Finder – Semantic Recommendation System
 
 ## Overview
 
-Faculty Finder is an end-to-end **Data Engineering project** that builds a clean, structured, and API-accessible dataset of university faculty information.
+Faculty Finder is an end-to-end **Data Engineering and Data Science project** that builds a structured faculty dataset from university web pages and provides a **semantic faculty recommendation system**.
 
-The system crawls multiple faculty web pages, normalizes the data, stores it in a relational database, and exposes it through a FastAPI service for downstream analytics and application use.
+The system allows users to enter a **free-text research description** and returns the **most relevant faculty members** based on semantic similarity between the query and faculty research profiles.
 
 ---
 
 ## Problem Statement
 
-Faculty information is typically distributed across multiple web pages and stored in semi-structured HTML formats.
+Faculty information is typically scattered across multiple web pages in semi-structured HTML format, making it difficult to identify the right faculty member for collaboration, guidance, or referral.
 
-The objective of this project is to:
+The objectives of this project are to:
 
-- Crawl faculty profile data from university's multiple faculty web pages
-- Normalize and clean scraped HTML data
-- Store structured faculty information in a relational database
-- Serve the data via a  REST API
+- Crawl and collect faculty profile data from university websites
+- Clean and normalize unstructured HTML data
+- Store faculty information in a relational database
+- Build a **semantic recommender system** using the processed data
+- Expose the recommender via an API that can be consumed by a public website
 
 ---
 
@@ -28,162 +29,166 @@ Faculty Web Pages (HTML)
         ↓
 Data Ingestion (Web Scraping)
         ↓
-Data Transformation (Cleaning & Normalization)
+Data Cleaning & Normalization
         ↓
 SQLite Database (faculty.db)
         ↓
-FastAPI Service
+Semantic Recommender (Embeddings + Similarity)
+        ↓
+FastAPI Backend
+        ↓
+Public Website / Client Application
 ```
 
 ---
 
 ## Tech Stack
 
-- **Ingestion:** Python, Requests, BeautifulSoup
-- **Transformation:** Pandas
-- **Storage:** SQLite
-- **Database Access:** SQLAlchemy
-- **API / Serving:** FastAPI
-- **API Documentation:** Swagger (OpenAPI)
-
----
-### Dataset Statistics
-
-After data cleaning and consolidation, the final dataset contains structured faculty information with the following statistics:
-
-- **Total number of faculty entries:** 111  
-- **Total number of attributes (columns):** 7  
-
-#### Missing Value Analysis
-
-| Column Name      | Number of NULL Values |
-|------------------|-----------------------|
-| faculty_id       | 0 |
-| name             | 0 |
-| profile_url      | 0 |
-| education        | 2 |
-| email            | 1 |
-| contact_number   | 34 |
-| research_area    | 3 |
-
-The presence of NULL values is expected, as not all faculty profiles publicly provide complete information such as contact numbers or research areas.  
-These missing values were handled gracefully during data ingestion and API serving using optional fields.
+- **Programming Language:** Python
+- **Web Scraping:** Requests, BeautifulSoup
+- **Data Processing:** Pandas
+- **Database:** SQLite
+- **ORM / DB Access:** SQLAlchemy
+- **Machine Learning / NLP:** Sentence Transformers, Scikit-learn
+- **API Framework:** FastAPI
+- **Deployment:** Railway (Backend), GitHub Pages / Vercel (Frontend)
+- **API Documentation:** OpenAPI (Swagger)
 
 ---
 
-### Statistical Summary
+## Dataset Description
 
-- The dataset contains **111 unique faculty records**
-- Each faculty member is uniquely identified using `faculty_id`
-- No duplicate entries exist after de-duplication
-- Most missing values occur in the `contact_number` column
-- The dataset is consistent, normalized, and suitable for analytical and API-based use
+The dataset contains structured faculty information with the following fields:
 
-## Database Design
+| Column          | Description |
+|-----------------|------------|
+| faculty_id      | Unique faculty identifier |
+| name            | Faculty name |
+| profile_url     | Faculty profile webpage |
+| education       | Educational background |
+| email           | Email address |
+| contact_number  | Contact number |
+| research_area   | Research interests |
+| photo           | photo_url of faculty photo |
 
-- **Database:** `faculty.db`
+---
 
-- **Table:** `faculty`
-   
-| Column          | Type               | Description                |
-|-----------------|--------------------|----------------------------|
-| faculty_id      | TEXT (Primary Key) | Unique faculty identifier  |
-| name            | TEXT               | Faculty name               |
-| profile_url     | TEXT               | Faculty profile URL        |
-| education       | TEXT               | Education details          |
-| email           | TEXT               | Email address              |
-| contact_number  | TEXT               | Contact number             |
-| research_area   | TEXT               | Research interests / areas |
+## Semantic Faculty Recommender System
+
+### Overview
+
+This project includes a **content-based semantic recommender system** that identifies suitable faculty members based on a user's research interest description.
+
+Unlike keyword-based search, this system understands the **semantic meaning** of text using embeddings.
+
+---
+
+### Recommendation Algorithm
+
+1. Faculty research areas and education details are combined into a single textual representation.
+2. These texts are converted into dense vector embeddings using a **Sentence Transformer model** (`all-MiniLM-L6-v2`).
+3. The user query is embedded using the same model.
+4. **Cosine similarity** is calculated between the query embedding and faculty embeddings.
+5. Faculty members are ranked by similarity score.
+6. The top-ranked faculty members are returned as recommendations.
+
+This enables semantic matching such as:
+- *"Large Language Models"* → *Natural Language Processing*
+- *"Statistical learning"* → *Machine Learning*
 
 ---
 
 ## API Endpoints
 
-The FastAPI service exposes faculty data through RESTful endpoints. All responses are returned in **JSON format** and are automatically documented using **Swagger (OpenAPI)**.
-
-### 1. Get All Faculty
-
-Returns a list of all faculty members available in the database.
+### Semantic Recommendation Endpoint
 
 **Endpoint**
 ```
-GET /faculty
+POST /recommend
 ```
 
-**Description**
-- Fetches all faculty records
-- Results are ordered by `faculty_id`
-- Suitable for analytics, dashboards, and downstream processing
+**Request Body**
+```json
+{
+  "query": "I want to work in machine learning and data science"
+}
+```
 
-**Sample Response**
+**Response (Example)**
 ```json
 [
   {
-    "faculty_id": "F-4821",
-    "name": "Abhishek Gupta",
-    "profile_url": "https://www.daiict.ac.in/faculty/...",
-    "education": "PhD (Electrical and Computer Engineering)",
-    "email": "abhishek@daiict.ac.in",
-    "contact_number": "+91-79-xxxxxxx",
-    "research_area": "Machine Learning, Signal Processing"
+    "faculty_id": "F-1021",
+    "name": "Dr. XYZ",
+    "research_area": "Machine Learning, Data Mining",
+    "score": 87.45
   }
 ]
 ```
 
-**HTTP Status Codes**
-- `200 OK` – Successful response
-- `500 Internal Server Error` – Database or server issue
+---
+
+### Health Check
+
+```
+GET /health
+```
+
+Returns the API status.
 
 ---
 
-## How to Run the Project
+## How to Run Locally
 
 ### 1. Install Dependencies
 
 ```bash
-pip install fastapi uvicorn sqlalchemy pandas requests beautifulsoup4
+pip install -r requirements.txt
 ```
 
-### 2. Create the Database
-
-- Install the SQLite Browser standard version in the system first : https://sqlitebrowser.org/dl/
-- Run the `db_sql.ipynb` file to create `faculty.db` and the `faculty` table.
-
-### 3. Run the API
+### 2. Run the API
 
 ```bash
-uvicorn main:app --reload
+python -m uvicorn main:app --reload
 ```
 
-### 4. Access the API
+### 3. Access API
 
-- API Endpoint: http://127.0.0.1:8000/faculty
-- Swagger UI: http://127.0.0.1:8000/docs
+- API Base URL: `http://127.0.0.1:8000`
+- Swagger Docs: `http://127.0.0.1:8000/docs`
 
 ---
 
-## Key Data Engineering Concepts Applied
+## Deployment
 
-- Multi-page web scraping
-- Data cleaning and normalization
-- Relational schema design
-- SQLite-based persistent storage
-- API-based data serving with FastAPI
+- The FastAPI backend is deployed as a **public API** using **Railway**.
+- CORS is enabled to allow browser-based frontend applications.
+- A lightweight frontend can consume the `/recommend` endpoint to provide a **public faculty search website**.
+
+---
+
+## Evaluation Strategy
+
+Since no labeled ground-truth data exists, evaluation is performed qualitatively by:
+
+- Testing multiple research queries
+- Inspecting relevance of ranked faculty results
+- Verifying semantic consistency across paraphrased queries
 
 ---
 
 ## Future Enhancements
 
-- Pagination and filtering in APIs
-- Faculty search by research area
-- Semantic search using embeddings
-- Containerized deployment using Docker
+- Precompute and cache faculty embeddings for faster response
+- Store embeddings in a vector database
+- Add faculty profile images and links in frontend
+- Implement feedback-based ranking
+- Extend to multi-university datasets
 
 ---
 
 ## Author
 
-- **Kunal Pramanik | 202518001**
-- **Jinal Sasiya | 202518062**  
-
+**Kunal Pramanik**  
+MSc Data Science
 
