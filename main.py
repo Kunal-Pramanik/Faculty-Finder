@@ -1,9 +1,24 @@
-from fastapi import FastAPI , Query
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, text
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
+import numpy as np
 
-# SQLite connection
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+
+app = FastAPI(title="Faculty Semantic Recommender")
+
+# ✅ CORS (REQUIRED FOR PUBLIC WEBSITE)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 DATABASE_URL = "sqlite:///faculty.db"
 
 engine = create_engine(
@@ -11,74 +26,65 @@ engine = create_engine(
     connect_args={"check_same_thread": False}
 )
 
-app = FastAPI(title="Faculty API (SQLite)")
+model = SentenceTransformer("all-MiniLM-L6-v2")
 
-class FacultyResponse(BaseModel):
+class RecommendationRequest(BaseModel):
+    query: str
+
+class RecommendationResponse(BaseModel):
     faculty_id: str
     name: str
-    profile_url: Optional[str]
-    education: Optional[str]
-    email: Optional[str]
-    contact_number: Optional[str]
-    research_area: Optional[str]
+    research_area: str
+    score: float
 
-@app.get("/faculty", response_model=List[FacultyResponse])
-def get_faculty():
+def get_faculty_data():
     with engine.connect() as conn:
         result = conn.execute(
             text("""
-                SELECT
-                    faculty_id,
-                    name,
-                    profile_url,
-                    education,
-                    email,
-                    contact_number,
-                    research_area
+                SELECT faculty_id, name, research_area, education
                 FROM faculty
-                ORDER BY faculty_id
+                WHERE research_area IS NOT NULL
             """)
         )
         return result.mappings().all()
 
+def semantic_recommend(query: str, top_k: int = 6):
+    faculty_data = get_faculty_data()
 
+    faculty_texts = [
+        f"{row['research_area']} {row['education']}"
+        for row in faculty_data
+    ]
 
-@app.get(
-    "/faculty-details-by-name",
-    response_model=List[FacultyResponse],
-    summary="Get details by faculty name",
-    description="Enter a faculty name to retrieve their details"
-)
-def get_research_area_by_name(
-    name: str = Query(..., description="Full name of the faculty")
-):
-    with engine.connect() as conn:
-        result = conn.execute(
-            text("""
-                SELECT *
-                FROM faculty
-                WHERE name = :name
-            """),
-            {"name": name}
-        )
-        return result.mappings().all()
+    faculty_embeddings = model.encode(faculty_texts)
+    query_embedding = model.encode([query])
 
+    similarities = cosine_similarity(query_embedding, faculty_embeddings)[0]
 
-@app.get(
-    "/search-by-research-area",
-    response_model=List[str],
-    summary="Search faculty by research area keyword"
-)
-def search_faculty_by_research_area(
-    keyword: str = Query(..., description="Keyword like Machine Learning")
-):
-    with engine.connect() as conn:
-        result = conn.execute(
-            text("""
-                SELECT name
-                FROM faculty
-                WHERE LOWER(research_area) LIKE LOWER(:keyword)
-            """),
-            {"keyword": f"%{keyword}%"}
-        )
-        return [row["name"] for row in result.mappings()]
+    ranked = sorted(
+        zip(faculty_data, similarities),
+        key=lambda x: x[1],
+        reverse=True
+    )
+
+    return [
+        {
+            "faculty_id": faculty["faculty_id"],
+            "name": faculty["name"],
+            "research_area": faculty["research_area"],
+            "score": round(float(score * 100), 2)
+        }
+        for faculty, score in ranked[:top_k]
+    ]
+
+@app.post("/recommend", response_model=List[RecommendationResponse])
+def recommend(request: RecommendationRequest):
+    return semantic_recommend(request.query)
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
+@app.get("/")
+def root():
+    return {"message": "Faculty Semantic Recommender API is running"}
