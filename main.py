@@ -6,17 +6,13 @@ import numpy as np
 import pickle
 import requests
 import os
+import time
 
-# ---------------------------------------------------------
 # 🔒 SECURE WAY: Read from Environment Variable
-# ---------------------------------------------------------
 HF_TOKEN = os.environ.get("HF_TOKEN") 
-
-# --- 🚨 FIX IS HERE: UPDATED URL ---
 API_URL = "https://router.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"
 headers = {"Authorization": f"Bearer {HF_TOKEN}"}
 
-# 1. SETUP APP
 app = FastAPI(title="Faculty Finder API")
 
 app.add_middleware(
@@ -27,7 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 2. LOAD DATA (Lightweight!)
+# LOAD DATA
 print("Loading Faculty Data...")
 try:
     with open("faculty_data.pkl", "rb") as f:
@@ -35,53 +31,52 @@ try:
         df = data['dataframe']
         embeddings = data['embeddings'] 
     print("✅ Data Loaded!")
-except FileNotFoundError:
-    print("⚠️ Warning: faculty_data.pkl not found. Make sure it's in the same folder.")
+except Exception as e:
+    print(f"❌ Critical Error loading data: {e}")
     df = None
-    embeddings = None
 
-# 3. HELPER: ASK HUGGING FACE FOR EMBEDDINGS
+# HELPER: ASK HUGGING FACE WITH RETRY LOGIC
 def query_hf_api(text):
-    if not HF_TOKEN:
-        return {"error": "Missing HF_TOKEN. Please set it in Render Environment Variables."}
-    response = requests.post(API_URL, headers=headers, json={"inputs": text})
-    return response.json()
+    for i in range(3):  # Try 3 times
+        try:
+            response = requests.post(API_URL, headers=headers, json={"inputs": text}, timeout=20)
+            result = response.json()
+            
+            # If AI is still loading, wait and retry
+            if isinstance(result, dict) and "estimated_time" in result:
+                wait_time = result.get("estimated_time", 5)
+                print(f"⏳ AI is warming up... waiting {wait_time}s")
+                time.sleep(wait_time)
+                continue
+                
+            return result
+        except Exception as e:
+            print(f"Retry {i+1} failed: {e}")
+            time.sleep(2)
+    return {"error": "AI Service Timeout. Please try again in a moment."}
 
-# 4. SEARCH ENDPOINT
 class SearchRequest(BaseModel):
     query: str
 
 @app.post("/search")
 async def search_faculty(request: SearchRequest):
     if df is None:
-        raise HTTPException(status_code=500, detail="Server Error: Database file missing")
+        raise HTTPException(status_code=500, detail="Database not loaded")
 
     try:
-        # A. Ask the Cloud API to convert query to numbers
         output = query_hf_api(request.query)
         
-        # Error handling if API is waking up
-        if isinstance(output, dict) and "error" in output:
-            print(f"HuggingFace Error: {output}")
-            return {"results": [], "message": f"AI Error: {output['error']}"}
-            
-        # B. Convert list to numpy array
-        if isinstance(output, list):
-            query_vector = np.array(output)
-        else:
-            print(f"Unexpected API Response: {output}")
-            return {"results": [], "message": "API Error: Unexpected response format"}
+        if not isinstance(output, list):
+            error_msg = output.get("error") if isinstance(output, dict) else "Unknown API Error"
+            return {"results": [], "message": error_msg}
 
-        # C. Calculate Similarity
+        query_vector = np.array(output)
         scores = np.dot(embeddings, query_vector.T).flatten()
         sorted_indices = scores.argsort()[::-1]
 
-        # D. Get Results
         results = []
         for idx in sorted_indices:
             current_score = float(scores[idx])
-            
-            # --- SHOW ALL RESULTS (Threshold 0.0) ---
             if current_score < 0.0: break 
 
             faculty_data = df.iloc[idx]
@@ -98,9 +93,9 @@ async def search_faculty(request: SearchRequest):
         return {"results": results}
 
     except Exception as e:
-        print(f"Error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Server Crash: {e}")
+        return {"results": [], "message": "The server encountered a math error. Try another query."}
 
 @app.get("/")
 def home():
-    return {"message": "Faculty Search API is Live (Updated URL)!"}
+    return {"message": "Faculty Search API is Live (Resilient Mode)!"}
