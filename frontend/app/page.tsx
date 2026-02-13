@@ -39,52 +39,44 @@ export default function Home() {
             
             {/* EXACT LOGO RECREATION */}
             <div className="relative group cursor-pointer">
-              {/* Deep Purple/Blue Outer Glow (Luminance Layer) */}
               <div className="absolute -inset-2 bg-gradient-to-br from-indigo-600 via-blue-500 to-cyan-400 rounded-2xl blur-md opacity-40 group-hover:opacity-60 transition duration-500"></div>
               
-              {/* The "C" Container */}
               <div className="relative w-14 h-14 bg-[#080c17] rounded-2xl flex items-center justify-center border border-white/20 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-                {/* Internal Glowing Rings Effect */}
                 <div className="absolute inset-1 rounded-xl border border-cyan-500/20 shadow-[inset_0_0_10px_rgba(6,182,212,0.1)]"></div>
                 
-                {/* Central Logo Elements */}
                 <div className="relative flex items-center justify-center">
-                   {/* Glowing 'C' shape with exact color logic */}
                   <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-tr from-indigo-400 via-blue-400 to-cyan-300 filter drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">
                     ♨️
                   </span>
-                  {/* Small white graduation cap icon placeholder or dot */}
                   <div className="absolute -bottom-1 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_10px_white]"></div>
                 </div>
               </div>
             </div>
       
-            {/* BRANDING TEXT - REWRITTEN FOR EXACT LOGO MATCH */}
+            {/* BRANDING TEXT - FIXED NESTING */}
             <div className="flex flex-col">
-              {/* CONNECT2FACULTY - Gradient & Neon Glow */}
               <h1 className="text-2xl font-bold tracking-tight flex items-center gap-1 drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-500">
                   Connect2Faculty
                 </span>
               </h1>
             
-              {/* SUB-TEXT - Monospace and Specific Blue Tint */}
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="text-[10px] text-blue-300/50 font-mono font-medium tracking-[0.2em] uppercase">
                   AI Research Collaboration
                 </span>
-                {/* Cyan Status Indicator */}
                 <div className="relative flex h-1.5 w-1.5">
                   <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></div>
                   <div className="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-500 shadow-[0_0_8px_rgba(34,211,238,1)]"></div>
                 </div>
               </div>
             </div>
+          </div> {/* CLOSE branding container */}
           
-          {/* NAVBAR LINKS - Responsive hidden on small screens */}
+          {/* NAVBAR LINKS */}
           <div className="hidden md:flex gap-10 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
-            <a href="#engine" className="hover:text-cyan-400 transition-all">The Engine</a>
-            <a href="#directory" className="hover:text-cyan-400 transition-all">Directory</a>
+            <a href="#results" className="hover:text-cyan-400 transition-all">The Engine</a>
+            <a href="#results" className="hover:text-cyan-400 transition-all">Directory</a>
             <button className="bg-white/5 border border-white/10 px-6 py-2 rounded-full text-white hover:bg-blue-600 hover:border-blue-500 transition-all duration-300">
               Launch
             </button>
@@ -104,7 +96,6 @@ export default function Home() {
             Find The <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300"> Best Faculty </span>
           </h1>
           
-          {/* THE COMMAND CENTER SEARCH BAR - NOW CONNECTED */}
           <div className="relative group max-w-3xl mx-auto">
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
             <div className="relative flex flex-col md:flex-row gap-2 bg-[#0f172a] p-2 rounded-2xl border border-white/10 shadow-2xl">
@@ -129,7 +120,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 3. SEARCH RESULTS - NEW SECTION */}
+      {/* 3. SEARCH RESULTS */}
       <main id="results" className="max-w-7xl mx-auto px-6 pb-24">
         {loading && (
           <div className="flex flex-col items-center py-20 animate-pulse">
@@ -160,7 +151,7 @@ export default function Home() {
                 <p className="text-sm text-slate-300 leading-relaxed line-clamp-3">{faculty.specialization}</p>
               </div>
               <a 
-                href={faculty.profile_url} target="_blank"
+                href={faculty.profile_url} target="_blank" rel="noreferrer"
                 className="p-4 text-center text-xs font-bold text-slate-400 hover:text-white border-t border-white/5 hover:bg-blue-600 transition-all"
               >
                 ACCESS PROFILE →
