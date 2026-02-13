@@ -60,7 +60,7 @@ export default function Home() {
                 </span>
               </h1>
               <span className="text-[7px] md:text-[8px] text-blue-300/50 font-mono tracking-[0.2em] uppercase mt-1">
-                AI Research Collaboration
+               AI Powered Faculty Search Engine
               </span>
             </div>
           </div>
@@ -68,7 +68,7 @@ export default function Home() {
           <div className="flex gap-4 md:gap-8 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 items-center">
             <a href="#hero" className="hover:text-cyan-400 transition-all">Engine</a>
             <a href="#results" className="hover:text-cyan-400 transition-all">Directory</a>
-            <a href="https://github.com/Kunal-Pramanik/Faculty-Finder" target="_blank" rel="noopener noreferrer" className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-white hover:bg-blue-600 transition-all">Repo</a>
+            <a href="https://github.com/Kunal-Pramanik/Faculty-Finder" target="_blank" rel="noopener noreferrer" className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-white hover:bg-blue-600 transition-all">Project Details </a>
           </div>
         </div>
       </nav>
