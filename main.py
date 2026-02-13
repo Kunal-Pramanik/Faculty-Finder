@@ -24,14 +24,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- 🚀 KEEP-ALIVE MECHANISM ---
+# --- 🚀 KEEP-ALIVE ---
 def keep_alive():
     while True:
         try:
             requests.get("https://faculty-connect.onrender.com/", timeout=10)
-            print("Pinged self to stay awake!")
-        except Exception as e:
-            print(f"Keep-alive ping failed: {e}")
+        except:
+            pass
         time.sleep(600)
 
 threading.Thread(target=keep_alive, daemon=True).start()
@@ -42,13 +41,13 @@ try:
     with open("faculty_data.pkl", "rb") as f:
         data = pickle.load(f)
         df = data['dataframe']
-        embeddings = np.array(data['embeddings']) # Ensure it's a numpy array
-    print(f"✅ Data Loaded! Embeddings Shape: {embeddings.shape}")
+        # Convert to numpy array immediately for speed
+        embeddings = np.array(data['embeddings']) 
+    print(f"✅ Data Loaded! Embeddings shape: {embeddings.shape}")
 except Exception as e:
-    print(f"❌ Critical Error loading data: {e}")
+    print(f"❌ Error loading data: {e}")
     df = None
 
-# --- HELPER: ASK HUGGING FACE ---
 def query_hf_api(text):
     for i in range(3):
         try:
@@ -56,21 +55,18 @@ def query_hf_api(text):
             result = response.json()
             
             if isinstance(result, dict) and "estimated_time" in result:
-                wait_time = result.get("estimated_time", 5)
-                print(f"⏳ AI warming up... waiting {wait_time}s")
-                time.sleep(wait_time)
+                time.sleep(result.get("estimated_time", 5))
                 continue
-                
-            if isinstance(result, list) and len(result) > 0:
-                # Extract first element if nested
-                vector = result[0] if isinstance(result[0], list) else result
-                return vector
-                
-            return result
+            
+            # 🛡️ THE FLATTENING FIX
+            # Hugging Face can return [[[...]]] or [[...]] or [...]
+            res = np.array(result)
+            return res.flatten().tolist() # This guarantees a single flat list of numbers
+            
         except Exception as e:
             print(f"Retry {i+1} failed: {e}")
             time.sleep(2)
-    return {"error": "AI Service Timeout."}
+    return None
 
 class SearchRequest(BaseModel):
     query: str
@@ -81,30 +77,27 @@ async def search_faculty(request: SearchRequest):
         raise HTTPException(status_code=500, detail="Database not loaded")
 
     try:
-        # 1. Get embedding
-        output = query_hf_api(request.query)
-        if not isinstance(output, list):
-            return {"results": [], "message": str(output.get("error", "API Error"))}
+        raw_output = query_hf_api(request.query)
+        if raw_output is None:
+            return {"results": [], "message": "AI Service Timeout"}
 
-        # 2. Prepare Vector & Normalize
-        query_vector = np.array(output)
-        query_vector = query_vector / np.linalg.norm(query_vector) # ✨ Normalize for better matching
+        query_vector = np.array(raw_output)
 
-        # 3. Calculate Scores (Dot Product)
-        # Check dimensions first
+        # 🎯 MATH CHECK: Ensure dimensions match
         if query_vector.shape[0] != embeddings.shape[1]:
-            print(f"Dimension mismatch! Query: {query_vector.shape[0]}, DB: {embeddings.shape[1]}")
-            return {"results": [], "message": "Search model version mismatch."}
+            print(f"Mismatch! Query vector is {query_vector.shape[0]}, but DB expects {embeddings.shape[1]}")
+            # If this prints, you need to re-generate your faculty_data.pkl
+            return {"results": [], "message": "Model dimension mismatch."}
 
+        # Calculate Scores
         scores = np.dot(embeddings, query_vector)
         sorted_indices = np.argsort(scores)[::-1]
 
         results = []
-        for idx in sorted_indices[:10]: # Limit to top 10 for speed
+        for idx in sorted_indices[:15]:
             current_score = float(scores[idx])
-            
-            # Use a very low threshold during testing
-            if current_score < -1.0: break 
+            # Set to a very low number to force matches to show up during debugging
+            if current_score < -100: break 
 
             faculty_data = df.iloc[idx]
             results.append({
@@ -114,16 +107,16 @@ async def search_faculty(request: SearchRequest):
                 "profile_url": faculty_data.get("Profile_URL", ""),
                 "teaching": faculty_data.get("Teaching", "N/A"),
                 "publications": faculty_data.get("Publications", "N/A"),
-                "score": current_score
+                "score": round(current_score, 4)
             })
 
-        print(f"✅ Success: Found {len(results)} matches for '{request.query}'")
+        print(f"✅ Successfully found {len(results)} matches for '{request.query}'")
         return {"results": results}
 
     except Exception as e:
-        print(f"❌ Server Error: {e}")
+        print(f"❌ Search Crash: {e}")
         return {"results": [], "message": f"Calculation error: {str(e)}"}
 
 @app.get("/")
 def home():
-    return {"message": "FacultyConnect API is Live and Awake!"}
+    return {"message": "API is online!"}
