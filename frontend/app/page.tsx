@@ -11,6 +11,7 @@ export default function Home() {
     if (!query) return;
     setLoading(true);
     setHasSearched(true);
+    setResults([]); // Clear previous results immediately
 
     try {
       const response = await fetch("https://faculty-connect.onrender.com/search", {
@@ -18,12 +19,18 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: query }),
       });
+      
+      if (!response.ok) throw new Error("API Failure");
+      
       const data = await response.json();
+      console.log("Search Results Received:", data); // Debugging line for Laptop
+
       if (data && Array.isArray(data.results)) {
         setResults(data.results);
       }
     } catch (error) {
       console.error("Search Error:", error);
+      alert("AI Server is waking up. Please try again in 30 seconds.");
     } finally {
       setLoading(false);
     }
@@ -32,16 +39,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#030712] text-slate-200 font-sans selection:bg-blue-500/30 scroll-smooth flex flex-col">
       
-      {/* 1. CYBER NAVIGATION - MOBILE OPTIMIZED */}
+      {/* 1. CYBER NAVIGATION */}
       <nav className="border-b border-white/5 bg-black/20 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3 md:gap-4">
-            {/* EXACT LOGO RECREATION FROM DESIGN */}
             <div className="relative group cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
               <div className="absolute -inset-1.5 bg-gradient-to-br from-indigo-600 via-blue-500 to-cyan-400 rounded-xl blur-md opacity-40 transition duration-500"></div>
               <div className="relative w-10 h-10 bg-[#080c17] rounded-xl flex items-center justify-center border border-white/20 overflow-hidden">
-                {/* Glowing Rings and Graduation Cap Icon */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/20 via-transparent to-transparent"></div>
                 <svg className="w-6 h-6 text-white drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
@@ -61,72 +65,52 @@ export default function Home() {
             </div>
           </div>
 
-          {/* NAVBAR LINKS - VISIBLE ON MOBILE */}
           <div className="flex gap-4 md:gap-8 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 items-center">
             <a href="#hero" className="hover:text-cyan-400 transition-all">Engine</a>
             <a href="#results" className="hover:text-cyan-400 transition-all">Directory</a>
-            
-            <a 
-              href="https://github.com/Kunal-Pramanik/Faculty-Finder" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hidden sm:flex bg-white/5 border border-white/10 px-4 py-1.5 rounded-full text-white hover:bg-blue-600 transition-all items-center gap-2"
-            >
-              <span>Repo</span>
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-            </a>
+            <a href="https://github.com/Kunal-Pramanik/Faculty-Finder" target="_blank" rel="noopener noreferrer" className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-white hover:bg-blue-600 transition-all">Repo</a>
           </div>
         </div>
       </nav>
 
       {/* 2. NEURAL HERO SECTION */}
-      <header id="hero" className="relative pt-8 md:pt-12 pb-8 md:pb-12 px-4 md:px-6 overflow-hidden flex flex-col justify-center border-b border-white/5">
+      <header id="hero" className="relative pt-8 md:pt-12 pb-8 md:pb-12 px-4 md:px-6 text-center border-b border-white/5">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-transparent to-transparent -z-10" />
+        <div className="inline-block px-3 py-1 mb-4 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-400 text-[8px] md:text-[9px] font-bold uppercase tracking-widest">
+          Semantic Intelligence Active
+        </div>
+        <h1 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight">
+          Find The <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300"> Best Faculty </span>
+        </h1>
         
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-block px-3 py-1 mb-4 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-400 text-[8px] md:text-[9px] font-bold uppercase tracking-widest">
-            Semantic Intelligence Active
-          </div>
-          
-          <h1 className="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight leading-tight">
-            Find The <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300"> Best Faculty </span>
-          </h1>
-          
-          <div className="relative group max-w-2xl mx-auto">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-            
-            <div className="relative flex flex-col md:flex-row gap-2 bg-[#0f172a] p-1.5 md:p-2 rounded-2xl border border-white/10 shadow-2xl">
-              <input 
-                id="search-input"
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                placeholder="Describe research vision..."
-                className="flex-1 bg-transparent px-4 py-3 outline-none text-white text-sm md:text-base placeholder:text-slate-500"
-              />
-              <button 
-                onClick={handleSearch} 
-                disabled={loading} 
-                className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold transition-all text-xs md:text-sm disabled:opacity-50 whitespace-nowrap uppercase tracking-widest"
-              >
-                {loading ? "Analyzing..." : "Ride The Data"}
-              </button>
-            </div>
+        <div className="relative group max-w-2xl mx-auto">
+          <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+          <div className="relative flex flex-col md:flex-row gap-2 bg-[#0f172a] p-1.5 md:p-2 rounded-2xl border border-white/10 shadow-2xl">
+            <input 
+              id="search-input"
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              placeholder="Describe research vision..."
+              className="flex-1 bg-transparent px-4 py-3 outline-none text-white text-sm md:text-base placeholder:text-slate-500"
+            />
+            <button onClick={handleSearch} disabled={loading} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold transition-all text-xs md:text-sm disabled:opacity-50 uppercase tracking-widest">
+              {loading ? "Analyzing..." : "Ride The Data"}
+            </button>
           </div>
         </div>
       </header>
 
-      {/* 3. RESULTS SECTION - FIX FOR MOBILE SCROLL */}
+      {/* 3. RESULTS SECTION */}
       <main id="results" className="flex-1 max-w-7xl mx-auto px-4 md:px-6 py-8 w-full">
         {loading && (
-          <div className="flex flex-col items-center py-10">
+          <div className="flex flex-col items-center py-10 animate-pulse">
             <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
             <p className="text-blue-400 font-mono text-[10px] tracking-widest uppercase">Analyzing Semantic Layers...</p>
           </div>
         )}
 
-        {/* RESULTS GRID - FORCED VISIBILITY */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {results.map((faculty, i) => (
             <div key={i} className="group bg-[#0f172a]/50 border border-white/5 rounded-2xl overflow-hidden hover:border-blue-500/40 transition-all duration-500 flex flex-col shadow-lg">
@@ -154,34 +138,28 @@ export default function Home() {
           ))}
         </div>
 
-        {!loading && !hasSearched && (
-          <div className="text-center py-16 opacity-30 border border-dashed border-white/10 rounded-3xl">
-            <p className="text-xs font-mono uppercase tracking-[0.3em]">Ready for Semantic Discovery</p>
+        {!loading && hasSearched && results.length === 0 && (
+          <div className="text-center py-12 opacity-50 border border-dashed border-white/5 rounded-3xl">
+            <p className="text-xs font-mono uppercase tracking-[0.2em]">Zero Matching Faculty Clusters Found</p>
           </div>
         )}
       </main>
 
       {/* 4. TEAM FOOTER */}
       <footer className="border-t border-white/5 bg-black/40 py-6 px-4 md:px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex flex-col items-center md:items-start">
-            <h4 className="text-white font-bold text-xs md:text-sm mb-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-              Developed by Data Riders
-            </h4>
+            <h4 className="text-white font-bold text-xs md:text-sm mb-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Developed by Data Riders</h4>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-6 text-[10px] md:text-[12px] font-bold tracking-wide">
               <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.1)]">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"/> 
-                Kunal Pramanik
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"/> Kunal Pramanik
               </span>
               <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.1)]">
-                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"/> 
-                Jinal Sasiya
+                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"/> Jinal Sasiya
               </span>
             </div>
           </div>
-          <div className="text-slate-500 text-[8px] font-mono uppercase tracking-[0.3em] opacity-40">
-            © 2026 Semantic Intelligence Hub
-          </div>
+          <div className="text-slate-500 text-[8px] font-mono uppercase tracking-[0.3em] opacity-40">© 2026 Semantic Intelligence Hub</div>
         </div>
       </footer>
     </div>
