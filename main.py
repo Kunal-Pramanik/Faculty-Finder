@@ -36,18 +36,36 @@ try:
 except Exception as e:
     print(f"❌ Error: {e}"); df = None
 
+
 def query_hf_api(text):
     for i in range(3):
         try:
             response = requests.post(API_URL, headers=headers, json={"inputs": text}, timeout=20)
             result = response.json()
-            if isinstance(result, dict) and "error" in result and "loading" in result["error"]:
-                time.sleep(result.get("estimated_time", 10)); continue
             
-            # Flatten to 384 dimensions
-            res = np.array(result).flatten()
-            return res.tolist() if res.size == 384 else None
-        except: time.sleep(2)
+            # 1. HANDLE MODEL COLD-START
+            if isinstance(result, dict) and "error" in result:
+                if "loading" in result["error"].lower():
+                    wait_time = result.get("estimated_time", 10)
+                    print(f"⏳ Model loading... waiting {wait_time}s")
+                    time.sleep(wait_time)
+                    continue
+                return None
+            
+            # 2. FLATTEN AND VALIDATE DIMENSIONS
+            # Hugging Face often returns nested lists like [[[...]]]
+            res = np.array(result)
+            flat_res = res.flatten().tolist()
+            
+            if len(flat_res) == 384:
+                return flat_res
+            else:
+                print(f"❌ Dimension Mismatch! Got {len(flat_res)}, expected 384")
+                return None
+                
+        except Exception as e:
+            print(f"Retry {i+1} failed: {e}")
+            time.sleep(2)
     return None
 
 class SearchRequest(BaseModel):
