@@ -51,7 +51,7 @@ export default function Home() {
                 <div className="relative flex items-center justify-center">
                    {/* Glowing 'C' shape with exact color logic */}
                   <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-tr from-indigo-400 via-blue-400 to-cyan-300 filter drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">
-                    🎓
+                    ♨️
                   </span>
                   {/* Small white graduation cap icon placeholder or dot */}
                   <div className="absolute -bottom-1 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_10px_white]"></div>
@@ -59,18 +59,27 @@ export default function Home() {
               </div>
             </div>
       
-            {/* BRANDING TEXT */}
+            {/* BRANDING TEXT - REWRITTEN FOR EXACT LOGO MATCH */}
             <div className="flex flex-col">
-              <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-1">
-                Connect<span className="text-cyan-400">2</span>Faculty
+              {/* CONNECT2FACULTY - Gradient & Neon Glow */}
+              <h1 className="text-2xl font-bold tracking-tight flex items-center gap-1 drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-500">
+                  Connect2Faculty
+                </span>
               </h1>
-              <div className="flex items-center gap-2">
-                <span className="text-[9px] text-slate-400 font-bold tracking-[0.3em] uppercase">AI Research Collaboration</span>
-                <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></div>
+            
+              {/* SUB-TEXT - Monospace and Specific Blue Tint */}
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-[10px] text-blue-300/50 font-mono font-medium tracking-[0.2em] uppercase">
+                  AI Research Collaboration
+                </span>
+                {/* Cyan Status Indicator */}
+                <div className="relative flex h-1.5 w-1.5">
+                  <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></div>
+                  <div className="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-500 shadow-[0_0_8px_rgba(34,211,238,1)]"></div>
+                </div>
               </div>
             </div>
-      
-          </div>
           
           {/* NAVBAR LINKS - Responsive hidden on small screens */}
           <div className="hidden md:flex gap-10 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
