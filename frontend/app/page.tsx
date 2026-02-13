@@ -53,23 +53,48 @@ export default function Home() {
               </div>
             </div>
 
-            {/* BRANDING TEXT - Gradient & Neon Glow */}
-            <div className="flex flex-col">
-              <h1 className="text-2xl font-bold tracking-tight flex items-center gap-1 drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-500">
-                  Connect2Faculty
-                </span>
-              </h1>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-[10px] text-blue-300/50 font-mono font-medium tracking-[0.2em] uppercase">
-                  AI Research Collaboration
-                </span>
-                <div className="relative flex h-1.5 w-1.5">
-                  <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></div>
-                  <div className="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-500 shadow-[0_0_8px_rgba(34,211,238,1)]"></div>
-                </div>
-              </div>
-            </div>
+{/* BRANDING GROUP - FIXED NESTING */}
+<div className="flex items-center gap-4">
+  
+  {/* LOGO ICON BOX: Replicating the luminous 'C' */}
+  <div className="relative group cursor-pointer">
+    {/* Outer Glow (Luminance Layer) */}
+    <div className="absolute -inset-2 bg-gradient-to-br from-indigo-600 via-blue-500 to-cyan-400 rounded-2xl blur-md opacity-40 group-hover:opacity-60 transition duration-500"></div>
+    
+    <div className="relative w-14 h-14 bg-[#080c17] rounded-2xl flex items-center justify-center border border-white/20 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+      {/* Internal Ring Effect */}
+      <div className="absolute inset-1 rounded-xl border border-cyan-500/20 shadow-[inset_0_0_10px_rgba(6,182,212,0.1)]"></div>
+      
+      <div className="relative flex items-center justify-center">
+        <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-tr from-indigo-400 via-blue-400 to-cyan-300 filter drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">
+          C
+        </span>
+        <div className="absolute -bottom-1 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_10px_white]"></div>
+      </div>
+    </div>
+  </div>
+
+  {/* BRANDING TEXT: Connect2Faculty in Neon Gradient */}
+  <div className="flex flex-col">
+    <h1 className="text-2xl font-bold tracking-tight flex items-center gap-1 drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]">
+      <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-500">
+        Connect2Faculty
+      </span>
+    </h1>
+  
+    <div className="flex items-center gap-2 mt-0.5">
+      <span className="text-[10px] text-blue-300/50 font-mono font-medium tracking-[0.2em] uppercase">
+        AI Research Collaboration
+      </span>
+      {/* Active Pulse Indicator */}
+      <div className="relative flex h-1.5 w-1.5">
+        <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></div>
+        <div className="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-500 shadow-[0_0_8px_rgba(34,211,238,1)]"></div>
+      </div>
+    </div>
+  </div>
+
+</div> {/* Correctly closes the branding group div */}
 
           </div> {/* Close Branding Group */}
 
