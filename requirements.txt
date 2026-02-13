@@ -2,4 +2,5 @@ fastapi
 uvicorn
 pandas
 numpy
-sentence-transformers
+requests
+
