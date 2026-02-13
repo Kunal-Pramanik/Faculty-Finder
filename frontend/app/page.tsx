@@ -145,41 +145,44 @@ export default function Home() {
         )}
       </main>
 
-      {/* 4. TEAM FOOTER */}
-<footer className="border-t border-white/5 bg-black/40 py-6 px-4 md:px-6">
-  <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-    <div className="flex flex-col items-center md:items-start">
-      <h4 className="text-white font-bold text-xs md:text-sm mb-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-        Developed by Data Riders
-      </h4>
-      <div className="flex flex-col sm:flex-row gap-3 md:gap-6 text-[10px] md:text-[12px] font-bold tracking-wide">
-        {/* Kunal's Profile */}
-        <a 
-          href="https://www.linkedin.com/in/kunal-pramanik-5aa131267" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="transition-all duration-300 hover:scale-105 active:scale-95"
-        >
-          <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.1)] hover:bg-blue-500/20 hover:border-blue-500/40 cursor-pointer">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"/> Kunal Pramanik
-          </span>
-        </a>
+{/* 4. TEAM FOOTER */}
+      <footer className="border-t border-white/5 bg-black/40 py-6 px-4 md:px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex flex-col items-center md:items-start">
+            <h4 className="text-white font-bold text-xs md:text-sm mb-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+              Developed by Data Riders
+            </h4>
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-6 text-[10px] md:text-[12px] font-bold tracking-wide">
+              {/* Kunal's Profile */}
+              <a 
+                href="https://www.linkedin.com/in/kunal-pramanik-5aa131267" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="transition-all duration-300 hover:scale-105 active:scale-95"
+              >
+                <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.1)] hover:bg-blue-500/20 hover:border-blue-500/40 cursor-pointer">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"/> Kunal Pramanik
+                </span>
+              </a>
 
-        {/* Jinal's Profile */}
-        <a 
-          href="https://www.linkedin.com/in/jinal-sasiya-b73071258" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="transition-all duration-300 hover:scale-105 active:scale-95"
-        >
-          <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.1)] hover:bg-cyan-500/20 hover:border-cyan-500/40 cursor-pointer">
-            <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"/> Jinal Sasiya
-          </span>
-        </a>
-      </div>
+              {/* Jinal's Profile */}
+              <a 
+                href="https://www.linkedin.com/in/jinal-sasiya-b73071258" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="transition-all duration-300 hover:scale-105 active:scale-95"
+              >
+                <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.1)] hover:bg-cyan-500/20 hover:border-cyan-500/40 cursor-pointer">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"/> Jinal Sasiya
+                </span>
+              </a>
+            </div>
+          </div>
+          <div className="text-slate-500 text-[8px] font-mono uppercase tracking-[0.3em] opacity-40">
+            © 2026 Semantic Intelligence Hub
+          </div>
+        </div>
+      </footer>
     </div>
-    <div className="text-slate-500 text-[8px] font-mono uppercase tracking-[0.3em] opacity-40">
-      © 2026 Semantic Intelligence Hub
-    </div>
-  </div>
-</footer>
+  );
+}
