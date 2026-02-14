@@ -1,7 +1,8 @@
 # ✨ Connect2Faculty – End-to-End Semantic Search System
 
-A full-stack **Big Data Engineering (BDE)** project that scrapes, processes, stores, and semantically searches university faculty data.  
-The system combines a robust automated data pipeline, SQLite-backed APIs, transformer-based semantic search, and a high-performance cloud-deployed UI.
+An end-to-end Big Data Engineering (BDE) pipeline and semantic search platform.
+
+Developed a custom crawler to scrape and clean university faculty data, implemented a high-dimensional vector search engine using FastAPI and Hugging Face transformers, and deployed a responsive Next.js frontend for real-time AI-powered mentor discovery.
 
 ---
 
