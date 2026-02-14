@@ -1,4 +1,4 @@
-# ✨ Connect2Faculty – End-to-End Semantic Search System
+# ✨ Connect2Faculty – End-to-End Semantic Faculty Search System
 
 An end-to-end Big Data Engineering (BDE) pipeline and semantic search platform.
 
@@ -6,7 +6,7 @@ Developed a custom crawler to scrape and clean university faculty data, implemen
 
 ---
 
-## 🚀 Live System
+## 🟢 Live System
 **Hosted on Vercel & Render** 👉 [https://faculty-connect-data-riders-pi.vercel.app](https://faculty-connect-data-riders-pi.vercel.app/)
 
 ---
@@ -33,12 +33,22 @@ Developed a custom crawler to scrape and clean university faculty data, implemen
 
 ---
 
-## Overview
-Connect2Faculty is an intelligent faculty discovery platform that enables **semantic, intent-based search** over university faculty profiles, going beyond traditional keyword matching.
+## <a id="overview"></a>🚀 Overview
+
+**Connect2Faculty** is an intelligent faculty discovery platform that enables **semantic, intent-based search** over university faculty profiles, going beyond traditional keyword matching. 
+
+### 💡 The Problem & Solution
+Traditional search systems fail when terminology differs. A student searching for **"Financial Prediction"** might miss an expert listed under **"Stochastic Portfolio Theory"**. Connect2Faculty solves this by mapping research ideas into a shared **384-dimensional semantic vector space**, recognizing conceptual relationships between modern research terms and foundational specializations.
+
+### 🔄 System Workflow
+1. **Scrape & Ingest**: Automated crawling of faculty profiles using **BeautifulSoup4**.
+2. **Clean & Transform**: Advanced text normalization and email de-obfuscation via **Pandas**.
+3. **Embed & Index**: Generation of dense vector representations using **Hugging Face Transformers**.
+4. **Search & Rank**: High-speed **Cosine Similarity** retrieval powered by **NumPy** and **FastAPI**.
 
 ---
 
-## Why Semantic Search?
+## <a id="Why Semantic Search?"></a>🔶 Why Semantic Search?
 
 Keyword-based search relies on exact word matching and fails when user intent and terminology differ. In academic discovery, the same research area is often described using varied or specialized language.
 
@@ -51,14 +61,23 @@ As a result, semantic search provides more accurate faculty matching and a signi
 
 ---
 
-## System Architecture
-- Web scraping & ingestion pipeline
-- Data cleaning and normalization
-- SQLite-backed API layer
-- Transformer-based embedding generation
-- Vector similarity search
-- Cloud-hosted frontend and backend services
+## <a id="system-architecture"></a> ⚙️ System Architecture
 
+The project follows a modular, decoupled architecture to separate the heavy data engineering pipeline from the real-time AI inference and user interface.
+
+```text
+[ Web Sources: DA-IICT Faculty Directories ]
+           ↓
+[ Data Pipeline: scrapy.py → data_preprocessing.py → data_push_db.py ]
+           ↓
+[ Relational Storage: SQLite DB (faculty.db) ]
+           ↓
+[ AI Model Service: Hugging Face Router API → all-MiniLM-L6-v2 ]
+           ↓
+[ Production Backend: FastAPI (main.py + faculty_data.pkl) ]
+           ↓
+[ Frontend UI: Next.js 14 (Tailwind CSS + Lucide React) ]
+```
 ---
 
 ## Tech Stack
